@@ -1,0 +1,414 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* Light theme only. The variant is kept so shadcn/ui class names compile. */
+@custom-variant dark (&:is(.dark *));
+
+/* ==========================================================================
+   1. Design tokens: the single source of truth.
+   The brand accent (--brand / --brand-foreground) is overridden at runtime
+   from the `brand` site setting (see src/components/layout/brand-style.tsx).
+   ========================================================================== */
+:root {
+  /* Core palette: warm neutrals that sit with stone and timber photography */
+  --color-white: #ffffff;
+  --color-surface: #f7f5f1; /* warm off-white page background */
+  --color-surface-muted: #ede8e0; /* stone: alternate sections */
+  --color-dark: #141413; /* dark sections */
+  --color-ink: #1a1917; /* warm near-black: text, buttons, footer */
+  --color-ink-muted: #6b6760; /* warm grey: secondary text */
+  --color-line: #e4dfd7; /* borders and dividers */
+  --color-button: #1a1917;
+  --color-button-text: #f7f5f1;
+  --color-danger: #c62828;
+  --color-success: #1b7f4b;
+
+  /* Brand accent (configurable). Use sparingly: eyebrows, active nav, link
+     arrows, hover states and stat units. */
+  --brand: #a47b4f;
+  --brand-foreground: #ffffff;
+  /* Derived tones, so they follow the accent chosen in the CMS:
+     deeper for small text on light backgrounds (AA contrast on off-white),
+     lighter for text on dark sections and photographs. */
+  --brand-ink: color-mix(in oklab, var(--brand) 75%, var(--color-ink));
+  --brand-light: color-mix(in oklab, var(--brand) 65%, #ffffff);
+
+  /* Layout */
+  --header-height: 4rem;
+  --gutter: clamp(1.25rem, 3.2vw, 3rem);
+  --site-max: 1920px;
+  --prose-max: 42rem;
+  --section-space: clamp(4rem, 9vw, 8.5rem);
+  --section-space-sm: clamp(2.5rem, 5vw, 4.5rem);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 160ms;
+  --duration-base: 320ms;
+  --duration-slow: 700ms;
+
+  /* shadcn/ui contract, mapped onto the tokens above */
+  --radius: 0.5rem;
+  --background: var(--color-surface);
+  --foreground: var(--color-ink);
+  --card: var(--color-surface);
+  --card-foreground: var(--color-ink);
+  --popover: var(--color-surface);
+  --popover-foreground: var(--color-ink);
+  --primary: var(--color-button);
+  --primary-foreground: var(--color-button-text);
+  --secondary: var(--color-surface-muted);
+  --secondary-foreground: var(--color-ink);
+  --muted: var(--color-surface-muted);
+  --muted-foreground: var(--color-ink-muted);
+  --accent: var(--color-surface-muted);
+  --accent-foreground: var(--color-ink);
+  --destructive: var(--color-danger);
+  --border: var(--color-line);
+  --input: var(--color-line);
+  --ring: #8c877f;
+  --chart-1: #1a1917;
+  --chart-2: #6b6760;
+  --chart-3: #a8a29a;
+  --chart-4: #d6d0c6;
+  --chart-5: var(--brand);
+  --sidebar: #f1eee9;
+  --sidebar-foreground: var(--color-ink);
+  --sidebar-primary: var(--color-ink);
+  --sidebar-primary-foreground: var(--color-white);
+  --sidebar-accent: var(--color-surface-muted);
+  --sidebar-accent-foreground: var(--color-ink);
+  --sidebar-border: var(--color-line);
+  --sidebar-ring: #8c877f;
+}
+
+/* ==========================================================================
+   2. Tailwind theme bridge
+   ========================================================================== */
+@theme inline {
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Brand-level semantic colours */
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-light: var(--brand-light);
+  --color-dark: var(--color-dark);
+  --color-ink: var(--color-ink);
+  --color-ink-muted: var(--color-ink-muted);
+  --color-surface-muted: var(--color-surface-muted);
+  --color-line: var(--color-line);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  --ease-out-expo: var(--ease-out);
+  --spacing-header: var(--header-height);
+}
+
+/* ==========================================================================
+   3. Typography and layout utilities (editorial scale)
+   ========================================================================== */
+@utility container-site {
+  width: 100%;
+  max-width: var(--site-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+@utility section-y {
+  padding-block: var(--section-space);
+}
+
+@utility section-y-sm {
+  padding-block: var(--section-space-sm);
+}
+
+@utility text-display-xl {
+  font-size: clamp(3rem, 8.4vw, 8.5rem);
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+@utility text-display {
+  font-size: clamp(2.5rem, 6vw, 5.75rem);
+  line-height: 0.94;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+@utility text-headline {
+  font-size: clamp(1.875rem, 3.6vw, 3.25rem);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+}
+
+@utility text-title {
+  font-size: clamp(1.25rem, 1.8vw, 1.625rem);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+}
+
+@utility text-eyebrow {
+  font-size: 0.75rem;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+/* Eyebrow over a photograph: no colour reads reliably on every image, so the
+   text is white with a soft shadow and the accent moves to a short rule. */
+@utility eyebrow-on-image {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-white);
+  text-shadow: 0 1px 12px rgb(0 0 0 / 0.45);
+  &::before {
+    content: "";
+    flex-shrink: 0;
+    width: 1.75rem;
+    height: 2px;
+    background: var(--brand);
+    box-shadow: 0 1px 8px rgb(0 0 0 / 0.3);
+  }
+}
+
+@utility text-lead {
+  font-size: clamp(1.0625rem, 1.3vw, 1.25rem);
+  line-height: 1.65;
+}
+
+@utility prose-site {
+  max-width: var(--prose-max);
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: var(--color-ink);
+  & p + p {
+    margin-top: 1.25em;
+  }
+}
+
+/* Pill buttons in the editorial style */
+@utility btn-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding-inline: 1.625rem;
+  border-radius: 9999px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    background-color var(--duration-fast) ease,
+    color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease,
+    opacity var(--duration-fast) ease;
+  &:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 3px;
+  }
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   4. Base
+   ========================================================================== */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: calc(var(--header-height) + 1rem);
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01";
+  }
+  ::selection {
+    background: var(--color-ink);
+    color: var(--color-surface);
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  :focus-visible {
+    outline-color: var(--brand);
+  }
+  img,
+  video {
+    max-width: 100%;
+  }
+}
+
+/* ==========================================================================
+   5. Site header states
+   Solid by default. When the page starts with a full-bleed hero (any element
+   with [data-hero-overlay]) and the visitor has not scrolled, the header
+   becomes transparent with white text.
+   After hydration, <HeroOverlaySignal> sets html[data-hero="on"|"off"] from
+   the heroes actually on screen: Next.js keeps visited pages mounted but
+   hidden, so a plain :has() would also match a hidden homepage hero. Before
+   hydration the :has() fallback applies, so there is no flash.
+   ========================================================================== */
+@layer components {
+  .site-header {
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    border-color: var(--color-line);
+  }
+  .site-header .logo-inverse {
+    display: none;
+  }
+  .site-header .nav-link {
+    transition:
+      color var(--duration-fast) ease,
+      opacity var(--duration-fast) ease;
+  }
+  .site-header .nav-link:hover {
+    color: var(--brand-ink);
+  }
+  .site-header .nav-link[aria-current="page"]::after {
+    content: "";
+    position: absolute;
+    left: 0.875rem;
+    right: 0.875rem;
+    bottom: 0.2rem;
+    height: 2px;
+    background: var(--brand);
+  }
+  .site-header .header-cta {
+    background: var(--color-button);
+    color: var(--color-button-text);
+  }
+
+  :is(html[data-hero="on"], html:not([data-hero]):has([data-hero-overlay])) .site-header[data-scrolled="false"][data-menu-open="false"] {
+    background-color: transparent;
+    color: var(--color-white);
+    border-color: transparent;
+  }
+  :is(html[data-hero="on"], html:not([data-hero]):has([data-hero-overlay])) .site-header[data-scrolled="false"][data-menu-open="false"] .logo-default {
+    display: none;
+  }
+  :is(html[data-hero="on"], html:not([data-hero]):has([data-hero-overlay])) .site-header[data-scrolled="false"][data-menu-open="false"] .logo-inverse {
+    display: inline-flex;
+  }
+  :is(html[data-hero="on"], html:not([data-hero]):has([data-hero-overlay])) .site-header[data-scrolled="false"][data-menu-open="false"] .header-cta {
+    background: var(--color-surface);
+    color: var(--color-ink);
+  }
+  /* Over a photograph, bronze text loses contrast: fade instead. */
+  :is(html[data-hero="on"], html:not([data-hero]):has([data-hero-overlay])) .site-header[data-scrolled="false"][data-menu-open="false"] .nav-link:hover {
+    color: inherit;
+    opacity: 0.7;
+  }
+  :is(html[data-hero="on"], html:not([data-hero]):has([data-hero-overlay])) .site-header[data-scrolled="false"][data-menu-open="false"] .nav-link[aria-current="page"]::after {
+    background: var(--brand-light);
+  }
+
+  /* Content starts below the fixed header, except under a full-bleed hero. */
+  .site-main {
+    padding-top: var(--header-height);
+  }
+  :is(html[data-hero="on"], html:not([data-hero]):has([data-hero-overlay])) .site-main {
+    padding-top: 0;
+  }
+}
+
+/* ==========================================================================
+   6. Entrance animations (progressive enhancement, no JavaScript)
+   ========================================================================== */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-load {
+    animation: reveal-up 0.9s var(--ease-out) both;
+  }
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal-up linear both;
+      animation-timeline: view();
+      animation-range: entry 5% entry 45%;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
